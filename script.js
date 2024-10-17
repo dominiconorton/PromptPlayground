@@ -141,3 +141,34 @@ function copyPrompt() {
         alert('Failed to copy prompt. Please try again.');
     });
 }
+
+function playPrompt() {
+    const promptText = document.getElementById('promptOutput').textContent;
+    const loader = document.getElementById('loader');
+    const rightTextBox = document.getElementById('rightTextBox');
+
+    // Show loader and clear previous content
+    loader.style.display = 'block';
+    rightTextBox.innerHTML = '';
+
+    fetch('https://hook.eu1.make.com/nk3ighpl9x3vgiqx39motewkkclah2yd', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: promptText }),
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log('Successfully sent:', data);
+        rightTextBox.innerHTML = marked.parse(data);
+    })
+    .catch(error => {
+        console.error('Error sending prompt:', error);
+        rightTextBox.innerHTML = '<p>Error: ' + error + '</p>';
+    })
+    .finally(() => {
+        // Hide loader when request is complete (success or error)
+        loader.style.display = 'none';
+    });
+}
