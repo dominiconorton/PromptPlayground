@@ -45,6 +45,7 @@ const toolbox = {
 
 const workspace = Blockly.inject('blocklyDiv', {toolbox: toolbox});
 
+// Block definitions
 Blockly.Blocks['prompt_start'] = {
     init: function() {
         this.appendDummyInput()
@@ -113,6 +114,27 @@ Object.entries(constraints).forEach(([key, value]) => {
     createSimpleBlock('constraint_' + key, value, 0);
 });
 
+// Function to dynamically adjust overflow when menu opens or closes
+function toggleOverflow(isMenuOpen) {
+    var blocklyDiv = document.getElementById('blocklyDiv');
+    if (isMenuOpen) {
+        // Enable scrolling when the menu is open
+        blocklyDiv.style.overflowY = 'auto';
+    } else {
+        // Hide overflow when the menu is closed
+        blocklyDiv.style.overflowY = 'hidden';
+    }
+}
+
+// Example listener for detecting toolbox state (open/closed)
+workspace.addChangeListener(function(event) {
+    if (event.type === Blockly.Events.TOOLBOX_ITEM_SELECT) {
+        toggleOverflow(true); // Menu is opened
+    } else if (event.type === Blockly.Events.TOOLBOX_ITEM_DESELECT) {
+        toggleOverflow(false); // Menu is closed
+    }
+});
+
 function generatePrompt() {
     const promptStart = workspace.getAllBlocks().find(block => block.type === 'prompt_start');
     
@@ -126,14 +148,14 @@ function generatePrompt() {
         const constraint = constraintBlock ? constraintBlock.toString() : '[CONSTRAINT]';
         
         const prompt = `Create a ${content} in the style of ${style} with the constraint: ${constraint}.`;
-        document.getElementById('promptOutput').textContent = prompt;
+        document.getElementById('generated-prompt').textContent = prompt;
     } else {
-        document.getElementById('promptOutput').textContent = "Please start with a 'Create a' block.";
+        document.getElementById('generated-prompt').textContent = "Please start with a 'Create a' block.";
     }
 }
 
 function copyPrompt() {
-    const promptText = document.getElementById('promptOutput').textContent;
+    const promptText = document.getElementById('generated-prompt').textContent;
     navigator.clipboard.writeText(promptText).then(() => {
         alert('Prompt copied to clipboard!');
     }).catch(err => {
@@ -143,12 +165,10 @@ function copyPrompt() {
 }
 
 function playPrompt() {
-    const promptText = document.getElementById('promptOutput').textContent;
-    const loader = document.getElementById('loader');
+    const promptText = document.getElementById('generated-prompt').textContent;
     const rightTextBox = document.getElementById('rightTextBox');
 
-    // Show loader and clear previous content
-    loader.style.display = 'block';
+    // Clear previous content
     rightTextBox.innerHTML = '';
 
     fetch('https://hook.eu1.make.com/nk3ighpl9x3vgiqx39motewkkclah2yd', {
@@ -161,14 +181,12 @@ function playPrompt() {
     .then(response => response.text())
     .then(data => {
         console.log('Successfully sent:', data);
+        // Display the output in the rightTextBox
         rightTextBox.innerHTML = marked.parse(data);
     })
     .catch(error => {
         console.error('Error sending prompt:', error);
+        // Display the error in the rightTextBox if there is an issue
         rightTextBox.innerHTML = '<p>Error: ' + error + '</p>';
-    })
-    .finally(() => {
-        // Hide loader when request is complete (success or error)
-        loader.style.display = 'none';
     });
 }

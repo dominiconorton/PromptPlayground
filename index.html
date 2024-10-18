@@ -3,33 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PromptPlayground</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Prompt Playground</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blockly/9.3.3/blockly.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="style.css"> <!-- Link to the external CSS -->
 </head>
-<body>
-    <div class="container">
+<body class="p-8 font-sans">
+
+    <h1 class="text-2xl font-bold mb-6">PromptPlayground</h1>
+
+    <div class="grid grid-cols-2 gap-8">
         <!-- Left Column -->
-        <div class="left-column">
-            <h1>PromptPlayground</h1>
-            <div id="blocklyDiv"></div>
-            <div class="button-container">
-                <button onclick="generatePrompt()">Generate Prompt</button>
-                <button onclick="copyPrompt()">Copy Prompt</button>
-                <button onclick="playPrompt()">Display Output</button>
-            </div>
-            <h2>Generated Prompt:</h2>
-            <div id="promptOutput"></div>
+        <div class="border border-gray-300 p-0 h-72 overflow-hidden">
+            <div id="blocklyDiv"></div> <!-- Blockly workspace directly inside the main div -->
         </div>
 
-        <!-- Right Column -->
-        <div class="right-column">
-            <div id="rightTextBox"></div>
-            <div class="loader" id="loader"></div>
+        <!-- Right Column with a Scrollable Output Box -->
+        <div class="border border-gray-300 p-4 h-72 overflow-hidden">
+            <div id="rightTextBox"></div> <!-- Single content container with scrollbar -->
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/blockly/9.3.3/blockly.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="script.js"></script>
+    <div class="flex gap-4 mt-4">
+        <button class="px-4 py-2 border border-gray-300 bg-gray-100" onclick="generatePrompt()">Generate Prompt</button>
+        <button class="px-4 py-2 border border-gray-300 bg-gray-100" onclick="copyPrompt()">Copy Prompt</button>
+        <button class="px-4 py-2 border border-gray-300 bg-gray-100" onclick="playPrompt()">Display Output</button>
+    </div>
+
+    <div class="mt-6">
+        <label for="generated-prompt" class="block mb-2">Generated Prompt:</label>
+        <textarea id="generated-prompt" class="w-full h-24 border border-gray-300 p-2 resize-none" readonly></textarea>
+    </div>
+
+    <script src="script.js"></script> <!-- Link to the external JavaScript file -->
 </body>
 </html>
